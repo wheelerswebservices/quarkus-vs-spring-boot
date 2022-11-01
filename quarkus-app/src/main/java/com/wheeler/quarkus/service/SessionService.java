@@ -1,11 +1,10 @@
-package com.wheeler.spring.service;
+package com.wheeler.quarkus.service;
 
-import com.wheeler.spring.dao.model.Session;
-import com.wheeler.spring.dao.repository.SessionRepository;
+import com.wheeler.quarkus.dao.model.Session;
+import com.wheeler.quarkus.dao.repository.SessionRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 import java.util.Optional;
 
@@ -21,20 +20,24 @@ public class SessionService {
 
     public Optional<Session> create(final Session session){
         log.info("SessionService create: {}", session);
-        if(sessionRepository.existsById(session.getCode())){
+
+        final String code = session.getCode();
+        final boolean exists = retrieve(code).isPresent();
+        if(exists){
             return Optional.empty();
         }
-        return Optional.of(sessionRepository.save(session));
+        sessionRepository.persist(session);
+        return retrieve(code);
     }
 
     public List<Session> retrieve(){
         log.info("SessionService retrieve");
-        return sessionRepository.findAll();
+        return sessionRepository.findAll().stream().toList();
     }
 
     public Optional<Session> retrieve(final String code){
         log.info("SessionService retrieve: {}", code);
-        return sessionRepository.findById(code);
+        return sessionRepository.findByIdOptional(code);
     }
 
     public void delete(final String code){

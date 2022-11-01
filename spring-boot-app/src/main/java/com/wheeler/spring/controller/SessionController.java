@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -26,6 +27,11 @@ public class SessionController {
         }
         httpResponse.setStatus(HttpStatus.CONFLICT.value());
         return null;
+    }
+
+    @PostMapping("retrieve")
+    public List<Session> retrieve() {
+        return sessionService.retrieve();
     }
 
     @GetMapping("retrieve/{code}")
