@@ -2,6 +2,8 @@ package com.wheeler.quarkus.controller;
 
 import com.wheeler.quarkus.dao.model.Session;
 import com.wheeler.quarkus.service.SessionService;
+import io.netty.handler.codec.http.HttpResponseStatus;
+import io.vertx.core.http.HttpServerResponse;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -22,12 +24,12 @@ public class SessionController {
     @Path("create")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    public Session create(Session request) {
+    public Session create(Session request, HttpServerResponse httpResponse) {
         final Optional<Session> session = sessionService.create(request);
         if(session.isPresent()){
             return session.get();
         }
-        // httpResponse.setStatus(HttpStatus.CONFLICT.value());
+        httpResponse.setStatusCode(HttpResponseStatus.CONFLICT.code());
         return null;
     }
 
@@ -41,19 +43,19 @@ public class SessionController {
     @GET
     @Path("retrieve/{code}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Session retrieve(@PathParam("code") String code) {
+    public Session retrieve(@PathParam("code") String code, HttpServerResponse httpResponse) {
         final Optional<Session> session = sessionService.retrieve(code);
         if(session.isPresent()){
             return session.get();
         }
-        // httpResponse.setStatus(HttpStatus.NO_CONTENT.value());
+        httpResponse.setStatusCode(HttpResponseStatus.NO_CONTENT.code());
         return null;
     }
 
     @DELETE
     @Path("delete/{code}")
-    public void delete(@PathParam("code") String code) {
+    public void delete(@PathParam("code") String code, HttpServerResponse httpResponse) {
         sessionService.delete(code);
-        // httpResponse.setStatus(HttpStatus.NO_CONTENT.value());
+        httpResponse.setStatusCode(HttpResponseStatus.NO_CONTENT.code());
     }
 }
